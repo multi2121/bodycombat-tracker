@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -6,87 +6,87 @@
     <title>Les Mills Bodycombat VR Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; }
-        html, body { overscroll-behavior-y: none; }
+        body { font-family: system-ui, -apple-system, sans-serif; overscroll-behavior-y: none; }
+        .hidden { display: none !important; }
+        .workout-card, .calendar-day { cursor: pointer; transition: all 0.2s; }
+        .completed-card { border-color: #22c55e !important; background-color: rgba(21, 128, 61, 0.2) !important; }
+        .completed-cell { background-color: rgba(34, 197, 94, 0.2) !important; border-color: #22c55e !important; color: #4ade80 !important; font-weight: bold; }
+        .rest-card { border-color: rgba(59, 130, 246, 0.3) !important; background-color: rgba(30, 58, 138, 0.1) !important; }
+        .rest-cell { background-color: rgba(30, 58, 138, 0.2) !important; border-color: rgba(30, 58, 138, 0.5) !important; color: #94a3b8 !important; }
     </style>
 </head>
 <body class="bg-slate-900 text-white min-h-screen p-4 pb-20">
-    <div id="storage-warning" class="hidden bg-red-900/50 border border-red-500 text-red-200 p-3 rounded-xl mb-4 text-sm text-center">
-        <strong>שים לב:</strong> פתחת את הקובץ במצב תצוגה מוגבל (content://). במצב זה אנדרואיד חוסם שמירת נתונים. התצוגה תעבוד, אך הנתונים יאבדו בסגירה. מומלץ לארח ב-GitHub Pages.
-    </div>
 
-
-    <!-- Header -->
     <header class="text-center mb-6 mt-4">
         <h1 class="text-3xl font-bold text-cyan-400">LES MILLS <span class="text-pink-500">BODYCOMBAT VR</span></h1>
         <p class="text-slate-400 text-sm mt-1">תוכנית אימונים יומיים משתנים ב-Meta Quest 2</p>
     </header>
 
-
-    <!-- Stats Dashboard -->
     <div class="grid grid-cols-2 gap-4 max-w-2xl mx-auto mb-6">
-        <div class="bg-slate-800 rounded-xl p-4 text-center border border-slate-700 shadow-lg">
+        <div class="bg-slate-800 rounded-xl p-4 text-center border border-slate-700">
             <div class="text-yellow-400 text-3xl font-bold" id="stat-streak">0</div>
             <div class="text-slate-400 text-xs mt-1">רצף פעיל (Streak)</div>
         </div>
-        <div class="bg-slate-800 rounded-xl p-4 text-center border border-slate-700 shadow-lg">
+        <div class="bg-slate-800 rounded-xl p-4 text-center border border-slate-700">
             <div class="text-cyan-400 text-3xl font-bold" id="stat-completed">0/30</div>
             <div class="text-slate-400 text-xs mt-1">אימונים הושלמו</div>
         </div>
-        <div class="bg-slate-800 rounded-xl p-4 text-center border border-slate-700 shadow-lg">
+        <div class="bg-slate-800 rounded-xl p-4 text-center border border-slate-700">
             <div class="text-purple-400 text-3xl font-bold" id="stat-time">0</div>
             <div class="text-slate-400 text-xs mt-1">זמן אימון (דקות)</div>
         </div>
-        <div class="bg-slate-800 rounded-xl p-4 text-center border border-slate-700 shadow-lg">
+        <div class="bg-slate-800 rounded-xl p-4 text-center border border-slate-700">
             <div class="text-pink-400 text-3xl font-bold" id="stat-calories">0</div>
             <div class="text-slate-400 text-xs mt-1">קלוריות (kcal)</div>
         </div>
     </div>
 
-
-    <!-- Controls -->
     <div class="flex justify-center gap-2 mb-6 max-w-2xl mx-auto">
-        <button onclick="setView('cards')" id="btn-cards" class="px-4 py-2 bg-cyan-600 rounded-full text-sm font-semibold transition-colors">תצוגת כרטיסיות</button>
-        <button onclick="setView('calendar')" id="btn-calendar" class="px-4 py-2 bg-slate-700 rounded-full text-sm font-semibold transition-colors">לוח שנה (חודש)</button>
+        <button onclick="toggleView('cards')" id="btn-cards" class="px-4 py-2 bg-cyan-600 rounded-full text-sm font-semibold">תצוגת כרטיסיות</button>
+        <button onclick="toggleView('calendar')" id="btn-calendar" class="px-4 py-2 bg-slate-700 rounded-full text-sm font-semibold">לוח שנה (חודש)</button>
     </div>
 
-
-    <div class="flex justify-center gap-2 mb-6 max-w-2xl mx-auto flex-wrap" id="week-filters">
-        <button onclick="setWeek(0)" id="btn-w0" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-cyan-600">הכל</button>
-        <button onclick="setWeek(1)" id="btn-w1" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-700">שבוע 1</button>
-        <button onclick="setWeek(2)" id="btn-w2" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-700">שבוע 2</button>
-        <button onclick="setWeek(3)" id="btn-w3" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-700">שבוע 3</button>
-        <button onclick="setWeek(4)" id="btn-w4" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-700">שבוע 4</button>
+    <div id="view-cards" class="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Cards will be populated here by JS -->
     </div>
 
-
-    <!-- Content Area -->
-    <div id="content-area" class="max-w-2xl mx-auto"></div>
-
+    <div id="view-calendar" class="max-w-2xl mx-auto hidden">
+         <div class="grid grid-cols-7 gap-2 text-center text-sm mb-2" id="calendar-header">
+            <div class="text-xs font-bold text-slate-500 pb-1">א</div>
+            <div class="text-xs font-bold text-slate-500 pb-1">ב</div>
+            <div class="text-xs font-bold text-slate-500 pb-1">ג</div>
+            <div class="text-xs font-bold text-slate-500 pb-1">ד</div>
+            <div class="text-xs font-bold text-slate-500 pb-1">ה</div>
+            <div class="text-xs font-bold text-slate-500 pb-1">ו</div>
+            <div class="text-xs font-bold text-slate-500 pb-1">ש</div>
+        </div>
+        <div class="grid grid-cols-7 gap-2 text-center" id="calendar-grid">
+             <!-- Calendar cells will be populated here -->
+        </div>
+    </div>
 
     <!-- Modal -->
     <div id="modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-sm border border-slate-600 shadow-2xl relative">
-            <button onclick="closeModal()" class="absolute top-4 left-4 text-slate-400 hover:text-white text-2xl leading-none">&times;</button>
+        <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-sm border border-slate-600 relative">
+            <button onclick="closeModal()" class="absolute top-4 left-4 text-slate-400 text-2xl">&times;</button>
             <h3 id="modal-title" class="text-xl font-bold text-white mb-1"></h3>
             <p id="modal-subtitle" class="text-cyan-400 text-sm mb-5"></p>
             
             <div id="modal-inputs">
                 <div class="mb-4">
-                    <label class="block text-xs text-slate-400 mb-1">זמן אימון בפועל (דקות)</label>
-                    <input type="number" id="input-time" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white outline-none focus:border-cyan-500 transition-colors" />
+                    <label class="block text-xs text-slate-400 mb-1">זמן אימון (דקות)</label>
+                    <input type="number" id="input-time" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white">
                 </div>
                 <div class="mb-6">
-                    <label class="block text-xs text-slate-400 mb-1">קלוריות שנשרפו בשעון/משחק (kcal)</label>
-                    <input type="number" id="input-calories" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white outline-none focus:border-cyan-500 transition-colors" />
+                    <label class="block text-xs text-slate-400 mb-1">קלוריות (kcal)</label>
+                    <input type="number" id="input-calories" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white">
                 </div>
-                <button onclick="saveWorkout()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl transition-colors text-lg shadow-lg">שמור נתונים</button>
+                <button onclick="saveWorkout()" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl">שמור נתונים</button>
             </div>
             
-            <button onclick="uncheckWorkout()" class="w-full bg-red-900/30 hover:bg-red-900/60 text-red-400 border border-red-900 font-semibold py-3 rounded-xl mt-3 transition-colors hidden" id="btn-uncheck">בטל השלמה לאימון זה</button>
+            <button onclick="uncheckWorkout()" class="w-full bg-red-900/30 text-red-400 border border-red-900 font-semibold py-3 rounded-xl mt-3 hidden" id="btn-uncheck">בטל השלמה לאימון זה</button>
         </div>
     </div>
-
 
     <script>
         const workouts = [
@@ -122,37 +122,23 @@
             { en: 'Victory Lap', he: 'שחרור וניצחון', diff: 'Light', time: 15 }
         ];
 
-
         let data = {};
-        let storageWorks = true;
-
-
-        // Try-Catch to prevent app crash on content:// URIs
-        try {
-            data = JSON.parse(localStorage.getItem('bc_data_v2')) || {};
-        } catch (e) {
-            storageWorks = false;
-            document.getElementById('storage-warning').classList.remove('hidden');
-        }
-
-
-        let currentView = 'cards';
-        let currentWeek = 0;
         let editingDay = null;
 
-
-        function saveData() {
-            if (storageWorks) {
-                try {
-                    localStorage.setItem('bc_data_v2', JSON.stringify(data));
-                } catch(e) {
-                    alert('לא ניתן לשמור נתונים במצב תצוגה זה.');
-                }
-            }
-            updateStats();
-            render();
+        function loadData() {
+            try {
+                let stored = localStorage.getItem('bc_data_v3');
+                if (stored) data = JSON.parse(stored);
+            } catch(e) {}
         }
 
+        function saveData() {
+            try {
+                localStorage.setItem('bc_data_v3', JSON.stringify(data));
+            } catch(e) {}
+            updateStats();
+            renderUI();
+        }
 
         function getDiffColor(diff) {
             if(diff === 'Light') return 'text-green-400 bg-green-900/30';
@@ -161,32 +147,144 @@
             return 'text-slate-400 bg-slate-800';
         }
 
-
         function updateStats() {
-            let completed = 0;
-            let totalTime = 0;
-            let totalCals = 0;
-            let streak = 0;
-            let currentStreak = 0;
-
-
-            for (let i = 1; i <= 30; i++) {
-                if (data[i] && data[i].completed) {
-                    completed++;
-                    totalTime += parseInt(data[i].time || 0);
-                    totalCals += parseInt(data[i].calories || 0);
-                    currentStreak++;
-                    streak = Math.max(streak, currentStreak);
-                } else if (workouts[i-1].diff !== 'Rest') {
-                    currentStreak = 0;
+            let comp = 0, time = 0, cals = 0, streak = 0, curStreak = 0;
+            for(let i=1; i<=30; i++) {
+                if(data[i] && data[i].completed) {
+                    comp++;
+                    time += parseInt(data[i].time || 0);
+                    cals += parseInt(data[i].calories || 0);
+                    curStreak++;
+                    streak = Math.max(streak, curStreak);
+                } else if(workouts[i-1].diff !== 'Rest') {
+                    curStreak = 0;
                 }
             }
-
-
-            document.getElementById('stat-completed').innerText = completed + '/30';
-            document.getElementById('stat-time').innerText = totalTime;
-            document.getElementById('stat-calories').innerText = totalCals;
+            document.getElementById('stat-completed').innerText = comp + '/30';
+            document.getElementById('stat-time').innerText = time;
+            document.getElementById('stat-calories').innerText = cals;
             document.getElementById('stat-streak').innerText = streak;
+        }
+
+        function toggleView(view) {
+            if (view === 'cards') {
+                document.getElementById('view-cards').classList.remove('hidden');
+                document.getElementById('view-calendar').classList.add('hidden');
+                document.getElementById('btn-cards').className = "px-4 py-2 bg-cyan-600 rounded-full text-sm font-semibold";
+                document.getElementById('btn-calendar').className = "px-4 py-2 bg-slate-700 rounded-full text-sm font-semibold";
+            } else {
+                document.getElementById('view-cards').classList.add('hidden');
+                document.getElementById('view-calendar').classList.remove('hidden');
+                document.getElementById('btn-cards').className = "px-4 py-2 bg-slate-700 rounded-full text-sm font-semibold";
+                document.getElementById('btn-calendar').className = "px-4 py-2 bg-cyan-600 rounded-full text-sm font-semibold";
+            }
+        }
+
+        function openModal(day) {
+            editingDay = day;
+            const w = workouts[day-1];
+            document.getElementById('modal-title').innerText = "יום " + day + ": " + w.en;
+            document.getElementById('modal-subtitle').innerText = w.he + " (" + w.diff + ")";
+            
+            if (w.diff === 'Rest') {
+                document.getElementById('modal-inputs').style.display = 'none';
+                if (!data[day] || !data[day].completed) {
+                    data[day] = { completed: true, time: 0, calories: 0 };
+                    saveData();
+                    closeModal();
+                    return;
+                }
+            } else {
+                document.getElementById('modal-inputs').style.display = 'block';
+            }
+            
+            if (data[day] && data[day].completed) {
+                document.getElementById('input-time').value = data[day].time || '';
+                document.getElementById('input-calories').value = data[day].calories || '';
+                document.getElementById('btn-uncheck').classList.remove('hidden');
+            } else {
+                document.getElementById('input-time').value = w.time > 0 ? w.time : '';
+                document.getElementById('input-calories').value = '';
+                document.getElementById('btn-uncheck').classList.add('hidden');
+            }
+            document.getElementById('modal').classList.replace('hidden', 'flex');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.replace('flex', 'hidden');
+        }
+
+        function saveWorkout() {
+            if(!editingDay) return;
+            data[editingDay] = {
+                completed: true,
+                time: document.getElementById('input-time').value,
+                calories: document.getElementById('input-calories').value
+            };
+            saveData();
+            closeModal();
+        }
+
+        function uncheckWorkout() {
+            if(!editingDay) return;
+            delete data[editingDay];
+            saveData();
+            closeModal();
+        }
+
+        function renderUI() {
+            let cardsHTML = '';
+            let calHTML = '';
+            
+            for(let i=1; i<=30; i++) {
+                const w = workouts[i-1];
+                const isDone = data[i] && data[i].completed;
+                const isRest = w.diff === 'Rest';
+                
+                // Card
+                let cardCls = "workout-card p-5 rounded-2xl border-2 flex justify-between items-center bg-slate-800 border-slate-700";
+                if(isDone) cardCls += " completed-card";
+                else if(isRest) cardCls += " rest-card";
+                
+                let checkHTML = isDone ? '<div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-xl">✓</div>' : '<div class="w-10 h-10 rounded-full border-2 border-slate-600 bg-slate-700/50"></div>';
+                let titleColor = isDone ? "text-green-400" : "text-white";
+                
+                cardsHTML += `
+                <div class="${cardCls}" onclick="openModal(${i})">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-lg font-bold">יום ${i}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded ${getDiffColor(w.diff)}">${w.diff.toUpperCase()}</span>
+                        </div>
+                        <div class="${titleColor} font-bold text-lg leading-tight">${w.en}</div>
+                        <div class="text-sm text-slate-400 mt-1">${w.he} ${w.time > 0 ? '• ' + w.time + ' דק\'' : ''}</div>
+                    </div>
+                    <div class="pl-2">${checkHTML}</div>
+                </div>`;
+                
+                // Calendar Cell
+                let cellCls = "calendar-day aspect-square rounded-xl flex flex-col items-center justify-center p-1 border-2 bg-slate-800 border-slate-700";
+                if(isDone) cellCls += " completed-cell";
+                else if(isRest) cellCls += " rest-cell";
+                
+                calHTML += `
+                <div class="${cellCls}" onclick="openModal(${i})">
+                    <div class="font-bold text-lg">${i}</div>
+                </div>`;
+            }
+            
+            document.getElementById('view-cards').innerHTML = cardsHTML;
+            document.getElementById('calendar-grid').innerHTML = calHTML;
+        }
+
+        // Initialize immediately
+        loadData();
+        updateStats();
+        renderUI();
+    </script>
+</body>
+</html>
+d('stat-streak').innerText = streak;
         }
 
 
